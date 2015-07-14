@@ -40,7 +40,8 @@ void serialize_freenect_reg_info(std::ofstream &fd,freenect_reg_info reg_info);
 void serialize_freenect_reg_pad_info(std::ofstream &fd, freenect_reg_pad_info    reg_pad_info);
 void serialize_freenect_zero_plane_info(std::ofstream &fd, freenect_zero_plane_info zero_plane_info);\
 void write_property(std::ofstream &fd, const char *name, int value);
-
+void write_property(std::ofstream &fd, const char *name, float value);
+void write_property(std::ofstream &fd, const char *name, double value);
 //void deserialize_registration(int fd, freenect_registration *registration);
 
 #endif //REGISTRATIONDUMP_SERIALIZATION_H

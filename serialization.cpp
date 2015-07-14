@@ -34,17 +34,12 @@
 
 void serialize_registration(std::ofstream &fd, freenect_registration *registration) {
     fd << "<?xml version=\"1.0\" ?>\n<configuration>\n";
-        // serialize fixed portions of struct
-    //write(fd, registration,sizeof(freenect_reg_info)+sizeof(freenect_reg_pad_info)+sizeof(freenect_zero_plane_info)+sizeof(double));
+    // serialize fixed portions of struct
     serialize_freenect_reg_info(fd, registration->reg_info);
     serialize_freenect_reg_pad_info(fd,registration->reg_pad_info);
     serialize_freenect_zero_plane_info(fd,registration->zero_plane_info);
-
-    // serialize pointers
-    //write(fd, registration->raw_to_mm_shift,sizeof(uint16_t) * DEPTH_MAX_RAW_VALUE);
-    //write(fd,registration->depth_to_rgb_shift,sizeof( int32_t) * DEPTH_MAX_METRIC_VALUE);
-
-    //write(fd,registration->registration_table,sizeof(int32_t)*640*480*2);
+    write_property(fd,"registration.const_shift",registration->const_shift);
+    // don't bother serializing the rest since these tables are computed anyway
     fd << "</configuration>" << std::endl;
 }
 
@@ -110,14 +105,33 @@ void serialize_freenect_reg_info(std::ofstream &fd, freenect_reg_info reg_info) 
 }
 
 void serialize_freenect_reg_pad_info(std::ofstream &fd, freenect_reg_pad_info reg_pad_info) {
-
+    write_property(fd, "reg_pad_info.start_lines",reg_pad_info.start_lines);
+    write_property(fd, "reg_pad_info.end_lines",reg_pad_info.end_lines);
+    write_property(fd, "reg_pad_info.cropping_lines",reg_pad_info.cropping_lines);
 }
 
 void serialize_freenect_zero_plane_info(std::ofstream &fd, freenect_zero_plane_info zero_plane_info) {
-
+    write_property(fd, "zero_plane_info.dcmos_emitter_dist",zero_plane_info.dcmos_emitter_dist);    // Distance between IR camera and IR emitter, in cm.
+    write_property(fd, "zero_plane_info.dcmos_rcmos_dist",zero_plane_info.dcmos_rcmos_dist);      // Distance between IR camera and RGB camera, in cm.
+    write_property(fd, "zero_plane_info.reference_distance",zero_plane_info.reference_distance);    // The focal length of the IR camera, in mm.
+    write_property(fd, "zero_plane_info.reference_pixel_size",zero_plane_info.reference_pixel_size);  // The size of a single pixel on the zero plane, in mm.
 }
 
 void write_property(std::ofstream &fd, const char *name, int value) {
+    fd << "<property>\n";
+    fd << "\t<name>" << name << "</name>\n";
+    fd << "\t<value>" << value << "</value>\n";
+    fd << "</property>\n";
+}
+
+void write_property(std::ofstream &fd, const char *name, float value) {
+    fd << "<property>\n";
+    fd << "\t<name>" << name << "</name>\n";
+    fd << "\t<value>" << value << "</value>\n";
+    fd << "</property>\n";
+}
+
+void write_property(std::ofstream &fd, const char *name, double value) {
     fd << "<property>\n";
     fd << "\t<name>" << name << "</name>\n";
     fd << "\t<value>" << value << "</value>\n";
