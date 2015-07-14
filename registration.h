@@ -26,43 +26,26 @@
  * either License.
  */
 
-#include <iostream>
-#include <fstream>
-#include <libfreenect/libfreenect.h>
-#include <libfreenect/libfreenect_registration.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include "serialization.h"
+#ifndef REGISTRATIONDUMP_REGISTRATION_H
+#define REGISTRATIONDUMP_REGISTRATION_H
 
-using namespace std;
+// from registration.c
+#define REG_X_VAL_SCALE 256 // "fixed-point" precision for double -> int32_t conversion
 
-int main() {
-    freenect_context *ctx;
-    freenect_device *dev;
-    ofstream outputfile;
-    outputfile.open("registration.xml",fstream::trunc|fstream::in);
+#define S2D_PIXEL_CONST 10
+#define S2D_CONST_OFFSET 0.375
 
-    if (!outputfile)
-        perror("Error openning output file");
+#define DEPTH_SENSOR_X_RES 1280
+#define DEPTH_MIRROR_X 0
 
-    if (freenect_init(&ctx,NULL))
-        perror("Cannot get context");
+#define DEPTH_MAX_METRIC_VALUE FREENECT_DEPTH_MM_MAX_VALUE
+#define DEPTH_NO_MM_VALUE      FREENECT_DEPTH_MM_NO_VALUE
+#define DEPTH_MAX_RAW_VALUE    FREENECT_DEPTH_RAW_MAX_VALUE
+#define DEPTH_NO_RAW_VALUE     FREENECT_DEPTH_RAW_NO_VALUE
 
-    freenect_select_subdevices(ctx, (freenect_device_flags)(FREENECT_DEVICE_MOTOR | FREENECT_DEVICE_CAMERA));
+#define DEPTH_X_OFFSET 1
+#define DEPTH_Y_OFFSET 1
+#define DEPTH_X_RES 640
+#define DEPTH_Y_RES 480
 
-    if (freenect_open_device(ctx,&dev,0)) {
-        perror("Error opening device");
-    }
-
-    freenect_registration reg=freenect_copy_registration(dev);
-    serialize_registration(outputfile,&reg);
-    freenect_destroy_registration(&reg);
-    outputfile.close();
-
-    freenect_close_device(dev);
-
-
-
-
-    return 0;
-}
+#endif //REGISTRATIONDUMP_REGISTRATION_H

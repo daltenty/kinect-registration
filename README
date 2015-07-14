@@ -1,0 +1,6 @@
+This repo contains two related programs:
+
+registrationfix - takes data recorded by fakenect and applies the depth-rgb registration normally applied by libfreenect
+                  using the intrinsics from an attached kinect
+
+dumpregistration - dumps the registration / intrinsics info from libfreenect to an xml file for later use

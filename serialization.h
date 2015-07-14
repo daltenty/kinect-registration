@@ -25,44 +25,22 @@
  * Binary distributions must follow the binary distribution requirements of
  * either License.
  */
+#ifndef REGISTRATIONDUMP_SERIALIZATION_H
+#define REGISTRATIONDUMP_SERIALIZATION_H
 
-#include <iostream>
-#include <fstream>
-#include <libfreenect/libfreenect.h>
 #include <libfreenect/libfreenect_registration.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include "serialization.h"
+#include <fstream>
+#include "registration.h"
 
-using namespace std;
+// NOTE: this is really dirty and depends on libfreenect internals
+// git-version: 89f77f6d2c
 
-int main() {
-    freenect_context *ctx;
-    freenect_device *dev;
-    ofstream outputfile;
-    outputfile.open("registration.xml",fstream::trunc|fstream::in);
+void serialize_registration(std::ofstream &fd, freenect_registration *registration);
+void serialize_freenect_reg_info(std::ofstream &fd,freenect_reg_info reg_info);
+void serialize_freenect_reg_pad_info(std::ofstream &fd, freenect_reg_pad_info    reg_pad_info);
+void serialize_freenect_zero_plane_info(std::ofstream &fd, freenect_zero_plane_info zero_plane_info);\
+void write_property(std::ofstream &fd, const char *name, int value);
 
-    if (!outputfile)
-        perror("Error openning output file");
+//void deserialize_registration(int fd, freenect_registration *registration);
 
-    if (freenect_init(&ctx,NULL))
-        perror("Cannot get context");
-
-    freenect_select_subdevices(ctx, (freenect_device_flags)(FREENECT_DEVICE_MOTOR | FREENECT_DEVICE_CAMERA));
-
-    if (freenect_open_device(ctx,&dev,0)) {
-        perror("Error opening device");
-    }
-
-    freenect_registration reg=freenect_copy_registration(dev);
-    serialize_registration(outputfile,&reg);
-    freenect_destroy_registration(&reg);
-    outputfile.close();
-
-    freenect_close_device(dev);
-
-
-
-
-    return 0;
-}
+#endif //REGISTRATIONDUMP_SERIALIZATION_H
