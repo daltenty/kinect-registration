@@ -129,14 +129,14 @@ void die (const char* str) {
 }
 
 int main(int argc,char *argv[]) {
-    if (argc != 2) {
+    if (argc != 3) {
         die("Wrong args");
     }
 
     freenect_context *ctx;
     freenect_device *dev;
     FILE *inputfile=fopen(argv[1],"r");
-    FILE *outputfile=fopen("fixeddepth.pgm", "w");
+    FILE *outputfile=fopen(argv[2], "w");
     char *buffer;
     uint16_t *new_img,*old_img;
     unsigned int bufsize;
